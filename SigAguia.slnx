@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SigAguia.Api/SigAguia.Api.csproj" />
+    <Project Path="src/SigAguia.Application/SigAguia.Application.csproj" />
+    <Project Path="src/SigAguia.Domain/SigAguia.Domain.csproj" />
+    <Project Path="src/SigAguia.Infrastructure/SigAguia.Infrastructure.csproj" />
+  </Folder>
+</Solution>
