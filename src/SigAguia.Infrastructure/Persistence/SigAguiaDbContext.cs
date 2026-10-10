@@ -1,7 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SigAguia.Domain.Cargos;
+using SigAguia.Domain.Funcoes;
+using SigAguia.Domain.Membros;
+using SigAguia.Domain.Ministerios;
 using SigAguia.Domain.Pessoas;
 using SigAguia.Domain.Unidades;
-using SigAguia.Domain.Membros;
+
 
 
 namespace SigAguia.Infrastructure.Persistence
@@ -17,6 +21,13 @@ namespace SigAguia.Infrastructure.Persistence
         public DbSet<Unidade> Unidades { get; set; }
         public DbSet<Membro> Membros { get; set; }
         public DbSet<MembroUnidade> MembrosUnidades { get; set; }
+        public DbSet<Cargo> Cargos { get; set; }
+        public DbSet<MembroCargo> MembrosCargos { get; set; }
+        public DbSet<Funcao> Funcao { get; set; }
+        public DbSet<MembroFuncao> MembrosFuncoes { get; set; }
+        public DbSet<Ministerio> Ministerios { get; set; }
+        public DbSet<MembroMinisterio> MembrosMinisterios { get; set; }
+        public DbSet<LiderancaMinisterio> LiderancasMinisterios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

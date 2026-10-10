@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SigAguia.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using SigAguia.Infrastructure.Persistence;
 namespace SigAguia.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SigAguiaDbContext))]
-    partial class SigAguiaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261010015252_AddEstruturaMinisterial")]
+    partial class AddEstruturaMinisterial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
