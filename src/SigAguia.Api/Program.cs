@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SigAguia.Infrastructure.Persistence;
+using SigAguia.Application.Unidades.CriarUnidade;
+using SigAguia.Application.Unidades.Repositories;
+using SigAguia.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,9 @@ var connectionString = builder.Configuration.GetConnectionString("SigAguia")
 
 builder.Services.AddDbContext<SigAguiaDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IUnidadeRepository, UnidadeRepository>();
+builder.Services.AddScoped<CriarUnidadeHandler>();
 
 var app = builder.Build();
 
@@ -45,6 +51,29 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
+app.MapPost("/unidades", async (
+    CriarUnidadeCommand command,
+    CriarUnidadeHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var resultado = await handler.ExecutarAsync(
+            command,
+            cancellationToken);
+
+        return Results.Created(
+            $"/unidades/{resultado.Id}",
+            resultado);
+    }
+    catch (MatrizJaExisteException exception)
+    {
+        return Results.Conflict(new
+        {
+            mensagem = exception.Message
+        });
+    }
+});
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
