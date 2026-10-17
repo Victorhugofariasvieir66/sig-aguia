@@ -16,6 +16,11 @@ namespace SigAguia.Application.Unidades.CriarUnidade
             CriarUnidadeCommand command,
             CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(command.Nome))
+            {
+                throw new NomeUnidadeInvalidoException();
+            }
+
             if (command.EhMatriz)
             {
                 var existeMatriz = await _unidadeRepository.ExisteMatrizAsync(

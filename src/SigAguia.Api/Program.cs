@@ -66,6 +66,13 @@ app.MapPost("/unidades", async (
             $"/unidades/{resultado.Id}",
             resultado);
     }
+    catch (NomeUnidadeInvalidoException exception)
+    {
+        return Results.BadRequest(new
+        {
+            mensagem = exception.Message
+        });
+    }
     catch (MatrizJaExisteException exception)
     {
         return Results.Conflict(new
