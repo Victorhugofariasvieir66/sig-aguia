@@ -30,8 +30,17 @@ namespace SigAguia.Infrastructure.Repositories
             await _dbContext.Unidades.AddAsync(
                 unidade,
                 cancellationToken);
-
+  
             await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+         
+        public async Task<List<Unidade>> ListarAsync(
+           CancellationToken cancellationToken = default)    
+        {
+           return await _dbContext.Unidades
+              .AsNoTracking()
+              .OrderBy(unidade => unidade.Nome)
+              .ToListAsync(cancellationToken);
         }
     }
 }

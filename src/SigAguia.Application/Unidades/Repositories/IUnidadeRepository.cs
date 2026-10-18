@@ -10,5 +10,8 @@ namespace SigAguia.Application.Unidades.Repositories
         Task AdicionarAsync(
             Unidade unidade,
             CancellationToken cancellationToken = default);
+
+        Task<List<Unidade>> ListarAsync(
+            CancellationToken cancellationToken = default);
     }
 }

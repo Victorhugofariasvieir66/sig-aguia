@@ -3,6 +3,7 @@ using SigAguia.Infrastructure.Persistence;
 using SigAguia.Application.Unidades.CriarUnidade;
 using SigAguia.Application.Unidades.Repositories;
 using SigAguia.Infrastructure.Repositories;
+using SigAguia.Application.Unidades.ListarUnidades;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<SigAguiaDbContext>(options =>
 
 builder.Services.AddScoped<IUnidadeRepository, UnidadeRepository>();
 builder.Services.AddScoped<CriarUnidadeHandler>();
+builder.Services.AddScoped<ListarUnidadesHandler>();
 
 var app = builder.Build();
 
@@ -80,6 +82,14 @@ app.MapPost("/unidades", async (
             mensagem = exception.Message
         });
     }
+});
+app.MapGet("/unidades", async (
+    ListarUnidadesHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    var resultado = await handler.ExecutarAsync(cancellationToken);
+
+    return Results.Ok(resultado);
 });
 app.Run();
 
