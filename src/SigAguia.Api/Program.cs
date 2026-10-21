@@ -4,6 +4,7 @@ using SigAguia.Application.Unidades.CriarUnidade;
 using SigAguia.Application.Unidades.Repositories;
 using SigAguia.Infrastructure.Repositories;
 using SigAguia.Application.Unidades.ListarUnidades;
+using SigAguia.Application.Unidades.BuscarUnidadePorId;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<SigAguiaDbContext>(options =>
 builder.Services.AddScoped<IUnidadeRepository, UnidadeRepository>();
 builder.Services.AddScoped<CriarUnidadeHandler>();
 builder.Services.AddScoped<ListarUnidadesHandler>();
+builder.Services.AddScoped<BuscarUnidadePorIdHandler>();
 
 var app = builder.Build();
 
@@ -88,6 +90,25 @@ app.MapGet("/unidades", async (
     CancellationToken cancellationToken) =>
 {
     var resultado = await handler.ExecutarAsync(cancellationToken);
+
+    return Results.Ok(resultado);
+});
+app.MapGet("/unidades/{id:guid}", async (
+   Guid id,
+   BuscarUnidadePorIdHandler handler,
+   CancellationToken cancellationToken) =>
+{
+    var resultado = await handler.ExecutarAsync(
+        id,
+        cancellationToken);
+
+    if (resultado is null)
+    {
+        return Results.NotFound(new
+        {
+            mensagem = "Unidade não encontrada."
+        });
+    }
 
     return Results.Ok(resultado);
 });

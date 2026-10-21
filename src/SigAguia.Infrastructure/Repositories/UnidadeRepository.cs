@@ -42,5 +42,15 @@ namespace SigAguia.Infrastructure.Repositories
               .OrderBy(unidade => unidade.Nome)
               .ToListAsync(cancellationToken);
         }
+        public async Task<Unidade?> BuscarPorIdAsync(
+           Guid id,
+           CancellationToken cancellationToken = default)
+        {
+           return await _dbContext.Unidades
+           .AsNoTracking()
+            .FirstOrDefaultAsync(
+                  unidade => unidade.Id == id,
+                  cancellationToken);
+        }
     }
 }
