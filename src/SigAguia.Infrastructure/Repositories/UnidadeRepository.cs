@@ -52,5 +52,13 @@ namespace SigAguia.Infrastructure.Repositories
                   unidade => unidade.Id == id,
                   cancellationToken);
         }
+        public async Task AtualizarAsync(
+            Unidade unidade,
+            CancellationToken cancellationToken = default)
+       {
+           _dbContext.Unidades.Update(unidade);
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+       }
     }
 }

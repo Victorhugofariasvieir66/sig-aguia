@@ -17,5 +17,9 @@ namespace SigAguia.Application.Unidades.Repositories
         Task<Unidade?> BuscarPorIdAsync(
             Guid id,
             CancellationToken cancellationToken = default);
-    }
+
+        Task AtualizarAsync(
+            Unidade unidade,
+             CancellationToken cancellationToken = default);
+    }    
 }
