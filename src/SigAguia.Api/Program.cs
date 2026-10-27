@@ -6,6 +6,7 @@ using SigAguia.Infrastructure.Repositories;
 using SigAguia.Application.Unidades.ListarUnidades;
 using SigAguia.Application.Unidades.BuscarUnidadePorId;
 using SigAguia.Application.Unidades.AtualizarUnidade;
+using SigAguia.Application.Unidades.AlterarStatusUnidade;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddScoped<CriarUnidadeHandler>();
 builder.Services.AddScoped<ListarUnidadesHandler>();
 builder.Services.AddScoped<BuscarUnidadePorIdHandler>();
 builder.Services.AddScoped<AtualizarUnidadeHandler>();
+builder.Services.AddScoped<AlterarStatusUnidadeHandler>();
 
 var app = builder.Build();
 
@@ -147,6 +149,30 @@ app.MapPut("/unidades/{id:guid}", async (
             mensagem = exception.Message
         });
     }
+});
+app.MapPatch("/unidades/{id:guid}/status", async (
+  Guid id,
+  AlterarStatusUnidadeCommand command,
+  AlterarStatusUnidadeHandler handler,
+  CancellationToken cancellationToken) =>
+{
+    var atualizado = await handler.ExecutarAsync(
+        id,
+        command,
+        cancellationToken);
+
+    if (!atualizado)
+    {
+        return Results.NotFound(new
+        {
+            mensagem = "Unidade não encontrada."
+        });
+    }
+
+    return Results.Ok(new
+    {
+        mensagem = "Status da unidade atualizado com sucesso."
+    });
 });
 app.Run();
 
