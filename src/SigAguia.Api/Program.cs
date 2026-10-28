@@ -7,6 +7,9 @@ using SigAguia.Application.Unidades.ListarUnidades;
 using SigAguia.Application.Unidades.BuscarUnidadePorId;
 using SigAguia.Application.Unidades.AtualizarUnidade;
 using SigAguia.Application.Unidades.AlterarStatusUnidade;
+using SigAguia.Application.Pessoas.CriarPessoa;
+using SigAguia.Application.Pessoas.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +29,9 @@ builder.Services.AddScoped<CriarUnidadeHandler>();
 builder.Services.AddScoped<ListarUnidadesHandler>();
 builder.Services.AddScoped<BuscarUnidadePorIdHandler>();
 builder.Services.AddScoped<AtualizarUnidadeHandler>();
-builder.Services.AddScoped<AlterarStatusUnidadeHandler>();
+builder.Services.AddScoped<AlterarStatusUnidadeHandler>(); 
+builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
+builder.Services.AddScoped<CriarPessoaHandler>();
 
 var app = builder.Build();
 
@@ -173,6 +178,30 @@ app.MapPatch("/unidades/{id:guid}/status", async (
     {
         mensagem = "Status da unidade atualizado com sucesso."
     });
+}); 
+app.MapPost("/pessoas", async (
+    CriarPessoaCommand command,
+    CriarPessoaHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var id = await handler.ExecutarAsync(
+            command,
+            cancellationToken);
+
+        return Results.Created($"/pessoas/{id}", new
+        {
+            id
+        });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new
+        {
+            mensagem = exception.Message
+        });
+    }
 });
 app.Run();
 
