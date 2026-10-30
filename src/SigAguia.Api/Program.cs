@@ -9,6 +9,9 @@ using SigAguia.Application.Unidades.AtualizarUnidade;
 using SigAguia.Application.Unidades.AlterarStatusUnidade;
 using SigAguia.Application.Pessoas.CriarPessoa;
 using SigAguia.Application.Pessoas.Repositories;
+using SigAguia.Application.Pessoas.BuscarPessoaPorId;
+using SigAguia.Application.Pessoas.ListarPessoas;
+using SigAguia.Application.Pessoas.AtualizarPessoa;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +35,9 @@ builder.Services.AddScoped<AtualizarUnidadeHandler>();
 builder.Services.AddScoped<AlterarStatusUnidadeHandler>(); 
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 builder.Services.AddScoped<CriarPessoaHandler>();
+builder.Services.AddScoped<BuscarPessoaPorIdHandler>();
+builder.Services.AddScoped<ListarPessoasHandler>();
+builder.Services.AddScoped<AtualizarPessoaHandler>();
 
 var app = builder.Build();
 
@@ -194,6 +200,57 @@ app.MapPost("/pessoas", async (
         {
             id
         });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new
+        {
+            mensagem = exception.Message
+        });
+    }
+});
+app.MapGet("/pessoas/{id:guid}", async (
+   Guid id,
+   BuscarPessoaPorIdHandler handler,
+   CancellationToken cancellationToken) =>
+{
+    var pessoa = await handler.ExecutarAsync(id, cancellationToken);
+
+    if (pessoa is null)
+        return Results.NotFound(new { mensagem = "Pessoa não encontrada." });
+
+    return Results.Ok(pessoa);
+});
+app.MapGet("/pessoas", async (
+    ListarPessoasHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    var pessoas = await handler.ExecutarAsync(cancellationToken);
+
+    return Results.Ok(pessoas);
+});
+app.MapPut("/pessoas/{id:guid}", async (
+    Guid id,
+    AtualizarPessoaCommand command,
+    AtualizarPessoaHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var atualizado = await handler.ExecutarAsync(
+            id,
+            command,
+            cancellationToken);
+
+        if (!atualizado)
+        {
+            return Results.NotFound(new
+            {
+                mensagem = "Pessoa não encontrada."
+            });
+        }
+
+        return Results.NoContent();
     }
     catch (ArgumentException exception)
     {

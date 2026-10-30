@@ -1,6 +1,8 @@
 ﻿using SigAguia.Application.Pessoas.Repositories;
 using SigAguia.Domain.Pessoas;
 using SigAguia.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using SigAguia.Application.Pessoas.AtualizarPessoa;
 
 namespace SigAguia.Infrastructure.Repositories
 {
@@ -20,6 +22,32 @@ namespace SigAguia.Infrastructure.Repositories
             await _dbContext.Pessoas.AddAsync(
                 pessoa,
                 cancellationToken);
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        public async Task<Pessoa?> BuscarPorIdAsync(
+            Guid id,
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Pessoas
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    pessoa => pessoa.Id == id,
+                    cancellationToken);
+        }
+        public async Task<List<Pessoa>> ListarAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Pessoas
+                .AsNoTracking()
+                .OrderBy(pessoa => pessoa.NomeCompleto)
+                .ToListAsync(cancellationToken);
+        }
+        public async Task AtualizarAsync(
+           Pessoa pessoa,
+           CancellationToken cancellationToken = default)
+        {
+            _dbContext.Pessoas.Update(pessoa);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
