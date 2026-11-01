@@ -12,6 +12,9 @@ using SigAguia.Application.Pessoas.Repositories;
 using SigAguia.Application.Pessoas.BuscarPessoaPorId;
 using SigAguia.Application.Pessoas.ListarPessoas;
 using SigAguia.Application.Pessoas.AtualizarPessoa;
+using SigAguia.Application.Membros.CriarMembro;
+using SigAguia.Application.Membros.Repositories;
+using SigAguia.Application.Membros.BuscarMembroPorId;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,17 +30,24 @@ var connectionString = builder.Configuration.GetConnectionString("SigAguia")
 builder.Services.AddDbContext<SigAguiaDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+
 builder.Services.AddScoped<IUnidadeRepository, UnidadeRepository>();
 builder.Services.AddScoped<CriarUnidadeHandler>();
 builder.Services.AddScoped<ListarUnidadesHandler>();
 builder.Services.AddScoped<BuscarUnidadePorIdHandler>();
 builder.Services.AddScoped<AtualizarUnidadeHandler>();
-builder.Services.AddScoped<AlterarStatusUnidadeHandler>(); 
+builder.Services.AddScoped<AlterarStatusUnidadeHandler>();
+
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 builder.Services.AddScoped<CriarPessoaHandler>();
 builder.Services.AddScoped<BuscarPessoaPorIdHandler>();
 builder.Services.AddScoped<ListarPessoasHandler>();
 builder.Services.AddScoped<AtualizarPessoaHandler>();
+
+builder.Services.AddScoped<IMembroRepository, MembroRepository>();
+builder.Services.AddScoped<CriarMembroHandler>();
+builder.Services.AddScoped<BuscarMembroPorIdHandler>();
+
 
 var app = builder.Build();
 
@@ -260,6 +270,65 @@ app.MapPut("/pessoas/{id:guid}", async (
         });
     }
 });
+app.MapPost("/membros", async (
+    CriarMembroCommand command,
+    CriarMembroHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var id = await handler.ExecutarAsync(
+            command,
+            cancellationToken);
+
+        return Results.Created($"/membros/{id}", new
+        {
+            id
+        });
+    }
+    catch (ArgumentException exception)
+    {
+        if (exception.Message == "Pessoa não encontrada.")
+        {
+            return Results.NotFound(new
+            {
+                mensagem = exception.Message
+            });
+        }
+
+        return Results.BadRequest(new
+        {
+            mensagem = exception.Message
+        });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Conflict(new
+        {
+            mensagem = exception.Message
+        });
+    }
+});
+app.MapGet("/membros/{id:guid}", async (
+    Guid id,
+    BuscarMembroPorIdHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    var membro = await handler.ExecutarAsync(
+        id,
+        cancellationToken);
+
+    if (membro is null)
+    {
+        return Results.NotFound(new
+        {
+            mensagem = "Membro não encontrado."
+        });
+    }
+
+    return Results.Ok(membro);
+});
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
