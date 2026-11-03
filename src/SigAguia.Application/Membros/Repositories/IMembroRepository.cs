@@ -16,5 +16,8 @@ namespace SigAguia.Application.Membros.Repositories
         Task AdicionarAsync(
             Membro membro,
             CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Membro>> ListarAsync(
+          CancellationToken cancellationToken = default);
     }
 }

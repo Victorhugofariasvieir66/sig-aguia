@@ -36,7 +36,13 @@ namespace SigAguia.Infrastructure.Repositories
                     m => m.Id == id,
                     cancellationToken);
         }
-
+        public async Task<IEnumerable<Membro>> ListarAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Membros
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+        }
         public async Task AdicionarAsync(
             Membro membro,
             CancellationToken cancellationToken = default)

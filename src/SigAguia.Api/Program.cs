@@ -15,6 +15,7 @@ using SigAguia.Application.Pessoas.AtualizarPessoa;
 using SigAguia.Application.Membros.CriarMembro;
 using SigAguia.Application.Membros.Repositories;
 using SigAguia.Application.Membros.BuscarMembroPorId;
+using SigAguia.Application.Membros.ListarMembros;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +48,7 @@ builder.Services.AddScoped<AtualizarPessoaHandler>();
 builder.Services.AddScoped<IMembroRepository, MembroRepository>();
 builder.Services.AddScoped<CriarMembroHandler>();
 builder.Services.AddScoped<BuscarMembroPorIdHandler>();
+builder.Services.AddScoped<ListarMembrosHandler>();
 
 
 var app = builder.Build();
@@ -328,10 +330,18 @@ app.MapGet("/membros/{id:guid}", async (
 
     return Results.Ok(membro);
 });
+app.MapGet("/membros", async (
+    ListarMembrosHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    var membros = await handler.ExecutarAsync(cancellationToken);
+
+    return Results.Ok(membros);
+});
 
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+} 

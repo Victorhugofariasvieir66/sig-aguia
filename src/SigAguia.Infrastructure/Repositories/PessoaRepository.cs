@@ -2,7 +2,7 @@
 using SigAguia.Domain.Pessoas;
 using SigAguia.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using SigAguia.Application.Pessoas.AtualizarPessoa;
+
 
 namespace SigAguia.Infrastructure.Repositories
 {
