@@ -55,13 +55,18 @@ namespace SigAguia.Infrastructure.Repositories
                 cancellationToken);
         }
         public async Task AtualizarAsync(
-           Membro membro,
-           CancellationToken cancellationToken = default)
+             Membro membro,
+             CancellationToken cancellationToken = default)
         {
-            _dbContext.Membros.Update(membro);
+            _dbContext.Membros.Attach(membro);
 
-            await _dbContext.SaveChangesAsync(
-                cancellationToken);
+            var entrada = _dbContext.Entry(membro);
+
+            entrada.Property(m => m.DataIngresso).IsModified = true;
+            entrada.Property(m => m.AtualizadoEm).IsModified = true;
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
+        
     }
 }
