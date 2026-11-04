@@ -16,6 +16,7 @@ using SigAguia.Application.Membros.CriarMembro;
 using SigAguia.Application.Membros.Repositories;
 using SigAguia.Application.Membros.BuscarMembroPorId;
 using SigAguia.Application.Membros.ListarMembros;
+using SigAguia.Application.Membros.AtualizarMembro;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IMembroRepository, MembroRepository>();
 builder.Services.AddScoped<CriarMembroHandler>();
 builder.Services.AddScoped<BuscarMembroPorIdHandler>();
 builder.Services.AddScoped<ListarMembrosHandler>();
+builder.Services.AddScoped<AtualizarMembroHandler>();
 
 
 var app = builder.Build();
@@ -112,6 +114,7 @@ app.MapPost("/unidades", async (
         });
     }
 });
+
 app.MapGet("/unidades", async (
     ListarUnidadesHandler handler,
     CancellationToken cancellationToken) =>
@@ -120,6 +123,7 @@ app.MapGet("/unidades", async (
 
     return Results.Ok(resultado);
 });
+
 app.MapGet("/unidades/{id:guid}", async (
    Guid id,
    BuscarUnidadePorIdHandler handler,
@@ -139,6 +143,7 @@ app.MapGet("/unidades/{id:guid}", async (
 
     return Results.Ok(resultado);
 });
+
 app.MapPut("/unidades/{id:guid}", async (
    Guid id,
    AtualizarUnidadeCommand command,
@@ -173,6 +178,7 @@ app.MapPut("/unidades/{id:guid}", async (
         });
     }
 });
+
 app.MapPatch("/unidades/{id:guid}/status", async (
   Guid id,
   AlterarStatusUnidadeCommand command,
@@ -197,6 +203,7 @@ app.MapPatch("/unidades/{id:guid}/status", async (
         mensagem = "Status da unidade atualizado com sucesso."
     });
 }); 
+
 app.MapPost("/pessoas", async (
     CriarPessoaCommand command,
     CriarPessoaHandler handler,
@@ -221,6 +228,7 @@ app.MapPost("/pessoas", async (
         });
     }
 });
+
 app.MapGet("/pessoas/{id:guid}", async (
    Guid id,
    BuscarPessoaPorIdHandler handler,
@@ -233,6 +241,7 @@ app.MapGet("/pessoas/{id:guid}", async (
 
     return Results.Ok(pessoa);
 });
+
 app.MapGet("/pessoas", async (
     ListarPessoasHandler handler,
     CancellationToken cancellationToken) =>
@@ -241,6 +250,7 @@ app.MapGet("/pessoas", async (
 
     return Results.Ok(pessoas);
 });
+
 app.MapPut("/pessoas/{id:guid}", async (
     Guid id,
     AtualizarPessoaCommand command,
@@ -272,6 +282,7 @@ app.MapPut("/pessoas/{id:guid}", async (
         });
     }
 });
+
 app.MapPost("/membros", async (
     CriarMembroCommand command,
     CriarMembroHandler handler,
@@ -311,6 +322,7 @@ app.MapPost("/membros", async (
         });
     }
 });
+
 app.MapGet("/membros/{id:guid}", async (
     Guid id,
     BuscarMembroPorIdHandler handler,
@@ -330,6 +342,7 @@ app.MapGet("/membros/{id:guid}", async (
 
     return Results.Ok(membro);
 });
+
 app.MapGet("/membros", async (
     ListarMembrosHandler handler,
     CancellationToken cancellationToken) =>
@@ -337,6 +350,25 @@ app.MapGet("/membros", async (
     var membros = await handler.ExecutarAsync(cancellationToken);
 
     return Results.Ok(membros);
+}); 
+
+app.MapPut("/membros/{id:guid}", async (
+    Guid id,
+    AtualizarMembroCommand command,
+    AtualizarMembroHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    var atualizado = await handler.ExecutarAsync(
+        id,
+        command,
+        cancellationToken);
+
+    if (!atualizado)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.NoContent();
 });
 
 app.Run();
