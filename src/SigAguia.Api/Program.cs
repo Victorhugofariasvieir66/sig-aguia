@@ -17,6 +17,8 @@ using SigAguia.Application.Membros.Repositories;
 using SigAguia.Application.Membros.BuscarMembroPorId;
 using SigAguia.Application.Membros.ListarMembros;
 using SigAguia.Application.Membros.AtualizarMembro;
+using SigAguia.Application.Membros.CriarVinculoMembroUnidade;
+using SigAguia.Application.Membros.ListarVinculosMembro;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +53,10 @@ builder.Services.AddScoped<CriarMembroHandler>();
 builder.Services.AddScoped<BuscarMembroPorIdHandler>();
 builder.Services.AddScoped<ListarMembrosHandler>();
 builder.Services.AddScoped<AtualizarMembroHandler>();
+
+builder.Services.AddScoped<IMembroUnidadeRepository, MembroUnidadeRepository>();
+builder.Services.AddScoped<CriarVinculoMembroUnidadeHandler>();
+builder.Services.AddScoped<ListarVinculosMembroHandler>();
 
 
 var app = builder.Build();
@@ -369,6 +375,54 @@ app.MapPut("/membros/{id:guid}", async (
     }
 
     return Results.NoContent();
+});
+app.MapPost("/membros/{id:guid}/unidades", async (
+    Guid id,
+    CriarVinculoMembroUnidadeCommand command,
+    CriarVinculoMembroUnidadeHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var vinculoId = await handler.ExecutarAsync(
+            id,
+            command,
+            cancellationToken);
+
+        return Results.Created(
+            $"/membros/{id}/unidades",
+            new { id = vinculoId });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new
+        {
+            mensagem = exception.Message
+        });
+    }
+    catch (KeyNotFoundException exception)
+    {
+        return Results.NotFound(new
+        {
+            mensagem = exception.Message
+        });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Conflict(new
+        {
+            mensagem = exception.Message
+        });
+    }
+});
+app.MapGet("/membros/{id:guid}/unidades", async (
+    Guid id,
+    ListarVinculosMembroHandler handler,
+    CancellationToken cancellationToken) =>
+{
+    var vinculos = await handler.ExecutarAsync(id, cancellationToken);
+
+    return Results.Ok(vinculos);
 });
 
 app.Run();
