@@ -67,6 +67,5 @@ namespace SigAguia.Infrastructure.Repositories
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
-        
     }
 }

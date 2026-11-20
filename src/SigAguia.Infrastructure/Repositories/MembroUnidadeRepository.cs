@@ -57,5 +57,19 @@ namespace SigAguia.Infrastructure.Repositories
                         && mu.TipoVinculo == "Principal",
                     cancellationToken);
         }
+
+        public async Task<MembroUnidade?> BuscarPorIdAsync(
+            Guid id,
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.MembrosUnidades
+                .FirstOrDefaultAsync(mu => mu.Id == id, cancellationToken);
+        }
+
+        public async Task SalvarAlteracoesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }

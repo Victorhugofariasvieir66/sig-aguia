@@ -19,5 +19,12 @@ namespace SigAguia.Application.Membros.Repositories
         Task<MembroUnidade?> BuscarVinculoPrincipalAtivoAsync(
             Guid membroId,
             CancellationToken cancellationToken = default);
+
+        Task<MembroUnidade?> BuscarPorIdAsync(
+           Guid id,
+           CancellationToken cancellationToken = default);
+        Task SalvarAlteracoesAsync(
+           CancellationToken cancellationToken = default);
+
     }
 }
